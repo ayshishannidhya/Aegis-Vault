@@ -2,6 +2,11 @@
  * Copyright (c) 2026 Aegis Vault
  * All rights reserved.
  *
+ * Author: Ayshi Shannidhya Panda
+ * Email:  asp45624@gmail.com
+ * Web:    https://ayshishannidhya.online
+ * GitHub: https://github.com/ayshishannidhya
+ *
  * This software, known as "AegisVault-J", including its source code, documentation,
  * design, and associated materials, is the intellectual property of the author.
  *
@@ -15,7 +20,13 @@
  */
 package com.aegisvault.service;
 
+import com.aegisvault.audit.AuditEventType;
+import com.aegisvault.audit.AuditLog;
 import com.aegisvault.container.VaultContainer;
+import com.aegisvault.crypto.KeyProtectionConfig;
+import com.aegisvault.enterprise.EnterpriseConfig;
+import com.aegisvault.sync.SyncConfig;
+import com.aegisvault.sync.SyncEngine;
 import com.aegisvault.vfs.VfsEntry;
 import com.aegisvault.vfs.VirtualFileSystem;
 
@@ -38,6 +49,11 @@ public class VaultService implements Closeable {
     private final AtomicLong lastActivityTime = new AtomicLong();
     private long autoLockTimeoutMs = DEFAULT_TIMEOUT_MS;
     private Runnable onAutoLockCallback;
+    private AuditLog auditLog;
+    private SyncEngine syncEngine;
+    private SyncConfig syncConfig;
+    private KeyProtectionConfig keyProtectionConfig;
+    private EnterpriseConfig enterpriseConfig;
 
     public void createVault(Path vaultPath, char[] password) {
         if (isVaultOpen()) {
@@ -49,6 +65,9 @@ public class VaultService implements Closeable {
             container.create(password.clone());
             vfs = new VirtualFileSystem(container);
             currentVaultPath = vaultPath;
+            auditLog = new AuditLog(this);
+            auditLog.initialize();
+            recordAudit(AuditEventType.VAULT_CREATED, vaultPath.getFileName().toString());
             startAutoLockTimer();
         } catch (Exception e) {
             close();
@@ -68,6 +87,9 @@ public class VaultService implements Closeable {
             container.open(password.clone());
             vfs = new VirtualFileSystem(container);
             currentVaultPath = vaultPath;
+            auditLog = new AuditLog(this);
+            auditLog.initialize();
+            recordAudit(AuditEventType.VAULT_OPENED, vaultPath.getFileName().toString());
             startAutoLockTimer();
         } catch (Exception e) {
             close();
@@ -79,7 +101,26 @@ public class VaultService implements Closeable {
 
     @Override
     public void close() {
+        if (auditLog != null && isVaultOpen()) {
+            try {
+                recordAudit(AuditEventType.VAULT_CLOSED,
+                        currentVaultPath != null ? currentVaultPath.getFileName().toString() : "");
+            } catch (Exception ignored) {
+            }
+        }
+
         stopAutoLockTimer();
+
+        if (syncEngine != null && syncConfig != null && syncConfig.isEnabled()
+                && syncConfig.getFrequency() == SyncConfig.SyncFrequency.ON_CLOSE
+                && currentVaultPath != null) {
+            try {
+                syncEngine.uploadOnly(currentVaultPath, syncConfig);
+            } catch (Exception ignored) {
+            }
+        }
+
+        auditLog = null;
 
         if (vfs != null) {
             vfs = null;
@@ -116,7 +157,9 @@ public class VaultService implements Closeable {
     public VfsEntry createFile(String path, byte[] content) {
         ensureVaultOpen();
         touchActivity();
-        return vfs.createFile(path, content);
+        VfsEntry entry = vfs.createFile(path, content);
+        recordAudit(AuditEventType.FILE_IMPORTED, path);
+        return entry;
     }
 
     public byte[] readFile(String path) {
@@ -134,13 +177,18 @@ public class VaultService implements Closeable {
     public void delete(String path) {
         ensureVaultOpen();
         touchActivity();
+        VfsEntry entry = vfs.getEntry(path);
+        AuditEventType deleteType = (entry != null && entry.isDirectory())
+                ? AuditEventType.FOLDER_DELETED : AuditEventType.FILE_DELETED;
         vfs.delete(path);
+        recordAudit(deleteType, path);
     }
 
     public void move(String source, String destination) {
         ensureVaultOpen();
         touchActivity();
         vfs.move(source, destination);
+        recordAudit(AuditEventType.FILE_RENAMED, source + " -> " + destination);
     }
 
     public boolean exists(String path) {
@@ -155,11 +203,30 @@ public class VaultService implements Closeable {
         return vfs.getEntry(path);
     }
 
+    @FunctionalInterface
+    public interface BatchOperation {
+        void run() throws Exception;
+    }
+
+    public void runInBatch(BatchOperation operation) throws Exception {
+        ensureVaultOpen();
+        touchActivity();
+        operation.run();
+        touchActivity();
+    }
+
     public void changePassword(char[] currentPassword, char[] newPassword) {
         ensureVaultOpen();
         touchActivity();
+        if (enterpriseConfig != null && !enterpriseConfig.isPasswordAcceptable(newPassword.length)) {
+            zeroPassword(currentPassword);
+            zeroPassword(newPassword);
+            throw new IllegalArgumentException("Password does not meet enterprise policy minimum of "
+                    + enterpriseConfig.getMinPasswordLength() + " characters");
+        }
         try {
             container.changePassword(currentPassword.clone(), newPassword.clone());
+            recordAudit(AuditEventType.PASSWORD_CHANGED, "Password changed successfully");
         } finally {
             zeroPassword(currentPassword);
             zeroPassword(newPassword);
@@ -221,6 +288,51 @@ public class VaultService implements Closeable {
     private void zeroPassword(char[] password) {
         if (password != null) {
             Arrays.fill(password, '\0');
+        }
+    }
+
+    public AuditLog getAuditLog() {
+        return auditLog;
+    }
+
+    public void setSyncEngine(SyncEngine syncEngine) {
+        this.syncEngine = syncEngine;
+    }
+
+    public SyncEngine getSyncEngine() {
+        return syncEngine;
+    }
+
+    public void setSyncConfig(SyncConfig syncConfig) {
+        this.syncConfig = syncConfig;
+    }
+
+    public SyncConfig getSyncConfig() {
+        return syncConfig;
+    }
+
+    public void setKeyProtectionConfig(KeyProtectionConfig config) {
+        this.keyProtectionConfig = config;
+    }
+
+    public KeyProtectionConfig getKeyProtectionConfig() {
+        return keyProtectionConfig;
+    }
+
+    public void setEnterpriseConfig(EnterpriseConfig config) {
+        this.enterpriseConfig = config;
+    }
+
+    public EnterpriseConfig getEnterpriseConfig() {
+        return enterpriseConfig;
+    }
+
+    private void recordAudit(AuditEventType type, String details) {
+        if (auditLog != null) {
+            try {
+                auditLog.record(type, details);
+            } catch (Exception ignored) {
+            }
         }
     }
 }

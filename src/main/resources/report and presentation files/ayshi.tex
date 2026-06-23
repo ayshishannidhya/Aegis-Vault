@@ -1,0 +1,555 @@
+\documentclass[12pt,a4paper]{report}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{fancyhdr}
+
+\geometry{margin=1in}
+\onehalfspacing
+\setlength{\parskip}{0.6em}
+\setlength{\parindent}{0pt}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{AejisVault-J}
+\fancyhead[R]{Secure Encrypted Container System}
+\fancyfoot[C]{\thepage}
+
+\definecolor{brand}{HTML}{1F4E79}
+\definecolor{accent}{HTML}{4B6CB7}
+\definecolor{muted}{HTML}{5B6472}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=brand,
+  urlcolor=accent,
+  citecolor=brand,
+  pdftitle={AejisVault-J Secure Encrypted Container System},
+  pdfauthor={Project Team}
+}
+
+% Title is presented on the custom title page below.
+\author{Author}
+\date{\today}
+\newcommand{\instituteName}{Instituto Federal do Espirito Santo\\Campus Vitoria}
+\newcommand{\firstPageLogo}{sitlogo.png}
+\newcommand{\bputLogo}{bput_logo.png}
+
+\newcommand{\projname}{AejisVault-J}
+\newcommand{\mvk}{Master Vault Key (MVK)}
+\newcommand{\kek}{Key Encryption Key (KEK)}
+
+\begin{document}
+
+\begin{titlepage}
+  \centering
+  {\Huge\bfseries AejisVault-J\par}
+
+  \vspace{2.0cm}
+  {\Large\itshape SIRE report submitted to the Biju Patnaik University of Technology\par}
+  \vspace{0.5em}
+  {\Large\itshape for the partial fulfillment for the award of the degree of\par}
+  \vspace{0.5em}
+  {\Large\bfseries Bachelor of Technology\par}
+  \vspace{0.5em}
+  {\Large\itshape in\par}
+  \vspace{0.5em}
+  {\Large\bfseries Computer Science and Engineering\par}
+
+  \vspace{1.2cm}
+  {\Large\itshape by\par}
+  \vspace{0.5em}
+  {\Large\bfseries Ashish Singh\par}
+  \vspace{0.4em}
+  {\Large\bfseries (Registration No.: 2301341014)\par}
+
+  \vspace{1.2cm}
+  {\Large\itshape under the supervision of\par}
+  \vspace{0.5em}
+  {\Large\bfseries Miss. Alka Dash\par}
+  \vspace{0.3em}
+  {\Large Assistant Professor, Department of Computer Science and Engineering\par}
+  \vspace{0.3em}
+  {\Large Silicon Institute of Technology, Sambalpur, Odisha\par}
+
+  \vspace{1.3cm}
+  \noindent
+  \begin{minipage}{0.35\textwidth}
+    \centering
+    \IfFileExists{\bputLogo}{\includegraphics[width=0.95\textwidth]{\bputLogo}}{}
+  \end{minipage}
+  \hspace{1.5em}
+  \begin{minipage}{0.35\textwidth}
+    \centering
+    \IfFileExists{\firstPageLogo}{\includegraphics[width=0.95\textwidth]{\firstPageLogo}}{}
+  \end{minipage}
+
+  \vfill
+  {\LARGE\bfseries DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING\par}
+  \vspace{0.5em}
+  {\LARGE\bfseries SILICON INSTITUTE OF TECHNOLOGY\par}
+  \vspace{0.5em}
+  {\LARGE\bfseries SAMBALPUR-768200, ODISHA, INDIA\par}
+  \vspace{0.5em}
+  {\LARGE\bfseries OCTOBER 2025\par}
+\end{titlepage}
+
+\pagenumbering{roman}
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+\projname{} is a secure encrypted container application designed to store sensitive files inside a single portable vault file. The system is intended for users who need controlled, user-managed encryption without relying on cloud storage or full-disk encryption. It uses AES-256-GCM for authenticated encryption of vault contents and Argon2id for deriving a key from the user's password. The design follows a strict operational model: files are imported into the vault, encrypted inside the container, locked when not in use, and exported only when the user intentionally chooses to access them externally. This report presents the problem context, system architecture, cryptographic design, security features, implementation stack, testing results, audit observations, limitations, and future enhancement opportunities. The analysis is intentionally conservative and avoids claims of absolute security.
+
+{\bfseries Keywords:} encrypted container, AES-GCM, Argon2id, JavaFX, secure storage, virtual file system, authenticated encryption.
+
+\chapter*{Acknowledgement}
+\addcontentsline{toc}{chapter}{Acknowledgement}
+This report is prepared as part of the B.Tech Minor Project work on secure storage systems. The project reflects practical learning in software engineering, cryptographic design, secure key management, and application-level file protection. The implementation emphasizes realistic boundaries and clear user awareness of what is protected and what is not.
+
+\chapter*{Certificate}
+\addcontentsline{toc}{chapter}{Certificate}
+\csname thispagestyle\endcsname{empty}
+\noindent\rule{\textwidth}{0.5pt}
+
+\vspace{0.5em}
+\noindent
+\begin{minipage}{0.30\textwidth}
+  \centering
+  \IfFileExists{\firstPageLogo}{\includegraphics[width=0.9\textwidth]{\firstPageLogo}}{}
+\end{minipage}
+\hfill
+\begin{minipage}{0.66\textwidth}
+  \raggedright
+  {\large Department of Computer Science and Engineering}\\[0.3em]
+  {\Large\bfseries Silicon Institute of Technology}\\[0.3em]
+  {\large Sambalpur-768200, Odisha, India}
+\end{minipage}
+
+\vspace{0.4em}
+\begin{flushright}
+{\large\bfseries OCTOBER 2025}
+\end{flushright}
+
+\vspace{2.0em}
+\begin{center}
+{\LARGE\bfseries CERTIFICATE}
+\end{center}
+
+\vspace{1.0em}
+This is to certify that the work contained in the report/project report entitled
+{\bfseries ``AejisVault-J: Secure Encrypted Container System''}, submitted by
+{\bfseries [Student Name] (Regd. No.: [Registration Number])} for the award of the
+degree of \textbf{Bachelor of Technology} to the \textbf{Biju Patnaik University of
+Technology, Rourkela, Odisha} is a record of bonafide research work carried out by
+him under the supervision of \textbf{[Supervisor Name]}. The contents embodied in this
+report have not been submitted for the award of any other degree or diploma in this
+or any other university.
+
+\vspace{2.2em}
+{\bfseries Date:} OCTOBER 2025\\
+{\bfseries Place:} SIT, Sambalpur
+
+\vspace{2.0em}
+\noindent
+\begin{minipage}{0.43\textwidth}
+\raggedright
+{\bfseries [Supervisor Name]}\\
+Supervisor\\
+Dept. of CSE, SIT
+\end{minipage}
+\hfill
+\begin{minipage}{0.43\textwidth}
+\raggedleft
+{\bfseries [HOD Name]}\\
+HOD, Dept. of CSE, SIT
+\end{minipage}
+
+\clearpage
+
+\csname tableofcontents\endcsname
+\listoffigures
+\listoftables
+\clearpage
+
+\pagenumbering{arabic}
+
+\chapter{Introduction}
+\section{Background}
+Digital information increasingly includes confidential documents, credentials, scanned certificates, personal records, and private archives. Such data often exists in heterogeneous storage environments, including laptops, removable drives, and cloud-backed folders. Conventional protection mechanisms such as full-disk encryption, operating system permissions, and ad hoc file compression do not always provide a simple, portable, and user-controlled way to protect a selected set of files. \projname{} addresses this gap by offering a dedicated encrypted container with explicit user interaction boundaries.
+
+\section{Purpose of the Project}
+The purpose of \projname{} is to provide a digital safe for files. Rather than encrypting the entire disk or exposing a mounted filesystem, it stores user-selected content inside a single encrypted vault file. The design prioritizes clarity of operation, consistent security semantics, and portability across platforms. The user must consciously import files into the vault and export them back to the host system, ensuring that protected and unprotected states are never ambiguous.
+
+\section{Scope of the Work}
+The project scope includes vault creation, vault opening, importing and exporting files and folders, hierarchical vault organization, password change, auto-locking, backup support, password strength validation, and an audited cryptographic implementation. The system protects the vault at rest and in transit as a file, but it does not protect exported files, malware-compromised hosts, or unlocked runtime memory from all threats.
+
+\section{Project Objectives}
+The major objectives are:
+\begin{enumerate}[label=\arabic*.]
+  \item To create a portable encrypted container for selected files.
+  \item To implement authenticated encryption using AES-256-GCM.
+  \item To derive a password-based encryption key using Argon2id.
+  \item To maintain a secure separation between vault data and exported data.
+  \item To implement a cross-platform Java application with a user-friendly interface.
+  \item To validate the implementation using unit tests and security review.
+\end{enumerate}
+
+\chapter{Problem Statement and Motivation}
+\section{Problem Context}
+Users who need to secure a small or medium set of sensitive files encounter several practical problems. Full-disk encryption is generally effective but is system-wide and may be complex to configure or explain. Manual file encryption is often tedious and prone to human error. Cloud vault services shift trust to third parties, introducing policy, availability, and privacy concerns. There is therefore a need for a simple, portable, and self-managed encrypted storage mechanism.
+
+\section{Motivation}
+The motivation behind \projname{} is to make file protection operationally clear. Security should not depend on hidden background behavior or assumptions about implicit protection. By making import, encryption, locking, and export explicit steps, the system reduces user confusion and supports better security decisions.
+
+\section{Design Philosophy}
+The project follows a security-first philosophy with honest threat modeling. This means that the system is designed to do one task well: securely store selected data in an encrypted container. It intentionally avoids overclaiming protection against every possible adversary. This approach is academically valuable because it reflects realistic boundaries found in secure system design.
+
+\chapter{System Model}
+\section{Frozen Operational Workflow}
+The system uses a fixed Import $\rightarrow$ Encrypt $\rightarrow$ Lock $\rightarrow$ Export workflow. Files are imported into the vault as copies, not moved. They are then encrypted inside the container. The vault is locked when not in use. If the user needs a file outside the vault, it must be exported. Exported files are not protected by the vault after export.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=2.3cm, every node/.style={draw, rounded corners, align=center, minimum height=1.2cm, minimum width=2.8cm}, >=Latex]
+  \node (import) {Import\\copies files};
+  \node (encrypt) [right of=import, xshift=1cm] {Encrypt\\inside vault};
+  \node (lock) [right of=encrypt, xshift=1cm] {Lock\\vault closed};
+  \node (export) [right of=lock, xshift=1cm] {Export\\external access};
+  \draw[->, thick] (import) -- (encrypt);
+  \draw[->, thick] (encrypt) -- (lock);
+  \draw[->, thick] (lock) -- (export);
+\end{tikzpicture}
+\caption{Operational workflow of \projname{}. The vault enforces a deliberate sequence of actions rather than hidden background encryption.}
+\label{fig:workflow}
+\end{figure}
+
+\section{Security Consequences of the Model}
+This workflow creates a clear line between protected and unprotected data. It helps users understand that the vault protects files only while they remain inside it. It also prevents a common misconception that an encryption tool automatically secures copies placed elsewhere on the host system. The exported file is ordinary file data and must be protected separately if needed.
+
+\section{What the System Is}
+\projname{} is a digital safe for files, a portable encrypted container with the .avj extension, a Java-based cross-platform application, and a logically structured virtual file system.
+
+\section{What the System Is Not}
+The system is not disk encryption, not a mounted filesystem, not real-time file encryption, not protection for exported files, and not malware-resistant in the sense that a compromised host remains compromised. These exclusions are important because they prevent misleading security assumptions.
+
+\chapter{Literature and Conceptual Context}
+\section{Full-Disk Encryption}
+Full-disk encryption protects an entire storage volume and is typically integrated into the operating system or boot chain. It is useful when the objective is to protect data at rest for the whole device. However, it is broader than the requirements of a selective file vault. \projname{} differs by limiting protection to chosen files and by maintaining a visible import/export workflow.
+
+\section{Archive-Based Encryption}
+Encrypted archives and password-protected compressed files can protect groups of files, but they are often more suited to static bundles than to an interactive vault with folder hierarchy, backup, and file-management operations. AegisVault-J extends the archive idea into a controlled container with structured internal representation.
+
+\section{Cloud Vaults}
+Cloud-based vaults offer convenience and synchronization, but they require trust in a third party and depend on network availability and service policies. \projname{} deliberately avoids that trust model by keeping the vault local and portable.
+
+\section{Application-Level Container Systems}
+Application-level encrypted containers occupy a middle ground between simple archives and full filesystem encryption. They are suitable when the user wants secure file storage without kernel-level integration. \projname{} belongs to this category.
+
+\chapter{System Architecture}
+\section{Layered Architecture}
+The architecture of the system is organized into five layers: JavaFX UI layer, service layer, virtual file system layer, encryption engine layer, and container file layer. Each layer has a narrow responsibility and communicates with adjacent layers through explicit interfaces.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=1.1cm, every node/.style={draw, rounded corners, align=center, minimum width=9cm, minimum height=0.95cm}, >=Latex]
+  \node (ui) {JavaFX UI Layer};
+  \node (service) [below of=ui] {Service Layer (VaultService)};
+  \node (vfs) [below of=service] {Virtual File System Layer};
+  \node (crypto) [below of=vfs] {Encryption Engine Layer (AES-GCM + Argon2id)};
+  \node (container) [below of=crypto] {Container File Layer (.avj)};
+  \draw[->, thick] (ui) -- (service);
+  \draw[->, thick] (service) -- (vfs);
+  \draw[->, thick] (vfs) -- (crypto);
+  \draw[->, thick] (crypto) -- (container);
+\end{tikzpicture}
+\caption{Layered architecture of \projname{}. The design separates presentation, business logic, logical file organization, cryptography, and persistent storage.}
+\label{fig:architecture}
+\end{figure}
+
+\section{JavaFX UI Layer}
+The user interface is implemented with JavaFX. Its role is to present vault actions, accept credentials, show folder hierarchy, display security warnings, and guide the user through import and export flows. The UI layer must not perform cryptographic operations directly; instead, it delegates to the service layer.
+
+\section{Service Layer}
+The \texttt{VaultService} coordinates application behavior. It validates user actions, enforces state transitions, and invokes file and cryptography operations in the proper order. Keeping these tasks in a service layer helps reduce coupling between UI elements and security-sensitive operations.
+
+\section{Virtual File System Layer}
+The virtual file system models the internal structure of the vault. It is logical rather than mounted at the operating system level. This design choice avoids kernel integration and reduces implementation complexity while still supporting folders and nested content.
+
+\section{Encryption Engine Layer}
+The encryption engine handles authenticated encryption, key generation, key derivation, key wrapping, and secure deletion attempts. It is the most security-sensitive layer and therefore requires careful testing and review.
+
+\section{Container File Layer}
+The .avj file is the persistent vault container. It stores encrypted metadata, encrypted content blobs, and cryptographic parameters required for opening the vault. Since the container is a single file, it is portable and can be transferred or backed up easily.
+
+\chapter{Cryptographic Design}
+\section{Core Key Concepts}
+The design uses two key concepts. The first is the \mvk{}, a random 256-bit symmetric key that encrypts all vault data. The second is the \kek{}, a password-derived key created from the user's password using Argon2id. The \kek{} is used only to encrypt or decrypt the \mvk{} and is never stored in plaintext.
+
+\section{Key Derivation and Unlock Flow}
+The unlock process is intentionally indirect. The password is never compared with a stored password hash for vault access. Instead, the system derives a \kek{} from the password and uses that key to decrypt the \mvk{}. If the decryption succeeds and the authentication tag verifies correctly, the password is accepted. If it fails, the password is rejected.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=1.6cm, every node/.style={draw, rounded corners, align=center, minimum width=2.8cm, minimum height=1cm}, >=Latex]
+  \node (password) {Password};
+  \node (argon) [right of=password, xshift=1cm] {Argon2id};
+  \node (kek) [right of=argon, xshift=1cm] {KEK};
+  \node (mvk) [below of=kek, yshift=-0.2cm] {Decrypt MVK};
+  \node (data) [left of=mvk, xshift=-1cm] {Access Vault Data};
+  \draw[->, thick] (password) -- (argon);
+  \draw[->, thick] (argon) -- (kek);
+  \draw[->, thick] (kek) -- (mvk);
+  \draw[->, thick] (mvk) -- (data);
+\end{tikzpicture}
+\caption{Password-to-vault access flow. Authentication succeeds through correct cryptographic decryption rather than direct password comparison.}
+\label{fig:keyflow}
+\end{figure}
+
+\section{AES-256-GCM}
+AES-GCM is used because it provides confidentiality and integrity in a single mode of operation. AES-256 offers a strong key size, while GCM provides authenticated encryption with associated data. In the vault context, this means tampering with ciphertext is detected, and a modified encrypted blob will fail validation during decryption.
+
+\section{Argon2id}
+Argon2id is a password-based key derivation function designed to be resistant to GPU and ASIC acceleration while also defending against tradeoffs between memory and computation. The project uses a memory cost of 64 MB, which raises the cost of brute-force attempts. The exact choice reflects a balance between security and usability on typical student hardware.
+
+\section{Security Properties}
+The cryptographic design provides several important properties:
+\begin{itemize}
+  \item the password is never stored in plaintext,
+  \item there is no direct password comparison table,
+  \item vault access is bound to successful authenticated decryption,
+  \item encrypted container contents remain protected while stored,
+  \item tampering with stored ciphertext is detected during decryption.
+\end{itemize}
+
+\section{Entropy Sources}
+The system uses \texttt{SecureRandom} for cryptographic randomness. Optional mouse entropy can be mixed in as a supplementary source, but it is never the primary entropy source. Security is therefore not dependent on human motion or user behavior.
+
+\chapter{Security Features}
+\section{Authenticated Encryption}
+Authenticated encryption ensures that confidentiality and integrity are both enforced. For a vault system, integrity is as important as secrecy, because corrupted ciphertext should not be silently accepted.
+
+\section{Auto-Lock}
+The auto-lock feature reduces exposure when the user leaves the application idle. This does not eliminate all risk, but it reduces the duration in which sensitive data remains open in memory and in the interface state.
+
+\section{Key Wiping}
+The application attempts to clear in-memory copies of sensitive key material after use. This is beneficial but should be understood as best-effort mitigation rather than a guarantee, because runtime environments may retain intermediate copies in internal structures.
+
+\section{Export Warnings}
+Since exported files are outside vault protection, the application warns users when they intentionally remove content from secure storage. This helps preserve the clarity of the security model.
+
+\section{Password Strength Checking}
+Password strength feedback is included to guide users toward better vault passwords. Strong passwords increase the work factor of brute-force attacks, especially when combined with Argon2id.
+
+\chapter{Mouse Randomness Feature}
+\section{Design Rationale}
+Some implementations use user interaction data as an auxiliary entropy source. In \projname{}, mouse movements are optionally collected and converted to byte entropy. This design may improve entropy diversity, but it is carefully positioned as a supplementary feature only.
+
+\section{Processing Model}
+The application records mouse coordinates and timestamps, transforms them into bytes, and mixes them into the random generator through reseeding. Because cryptographic security must not depend on user behavior, this feature is not part of the trust base.
+
+\section{Security Interpretation}
+The feature must not be treated as primary entropy. If the mouse data were unavailable or predictable, the vault security would still rely on proper cryptographic primitives and a strong password. This distinction is important for honest security analysis.
+
+\chapter{Implementation Stack}
+\section{Language and Runtime}
+The application is implemented in Java. Java provides portability, rich library support, and strong ecosystem compatibility with desktop application development.
+
+\section{User Interface}
+JavaFX is used for the desktop UI. It supports modern interface rendering, event handling, and structured layout without requiring platform-specific UI code.
+
+\section{Cryptographic Libraries}
+The project uses \texttt{javax.crypto} alongside BouncyCastle for cryptographic operations. This combination allows access to standard Java cryptography APIs and supplemental algorithm support where needed.
+
+\section{Build and Packaging}
+Gradle manages the build process, dependency resolution, and packaging tasks. The project can be targeted for native distribution formats such as Windows \texttt{.exe}, Linux AppImage, and macOS \texttt{.app}.
+
+\chapter{Functional Features}
+\section{Vault Lifecycle}
+The system supports vault creation and opening. During creation, the vault structure is initialized, and the encrypted key material is stored. During opening, the password-based key derivation process is performed and the vault contents are decrypted if authentication succeeds.
+
+\section{Import and Export Operations}
+Import operations copy files or folders into the vault. Export operations copy selected items out of the vault to a chosen host path. Since export means leaving the protected environment, the system marks this as an explicit trust boundary.
+
+\section{Folder Hierarchy Management}
+The vault preserves an internal folder tree. This helps users organize content in a way that resembles a normal file manager while still keeping the data inside the encrypted container.
+
+\section{Password Change}
+The password change feature rewraps the \mvk{} with a new \kek{} derived from the new password. This design avoids re-encrypting every file in the vault and reduces the risk and cost of password updates.
+
+\section{Backup Utility}
+Backup support helps users preserve encrypted vault copies. Since the vault file is self-contained, backups can be made at the container level rather than by copying many individual files.
+
+\section{Password Strength Checker}
+The password strength checker offers immediate feedback on likely weakness patterns such as short length or common structure. It does not replace cryptographic protection, but it helps improve user behavior.
+
+\chapter{Module Design}
+\section{Presentation Module}
+The presentation module is responsible for screens, dialog boxes, progress indicators, warning messages, and user interaction events. It must remain free from direct cryptographic implementation details.
+
+\section{Vault Management Module}
+The vault management module coordinates file operations, folder hierarchy updates, and state transitions between open, locked, and exported states.
+
+\section{Crypto Module}
+The crypto module performs encryption, decryption, key wrapping, key derivation, and initialization vector generation. It must be isolated and well tested because errors here directly affect security.
+
+\section{Storage Module}
+The storage module serializes metadata, encrypted file objects, and integrity-protected headers into the container file format. It also reconstructs them when opening the vault.
+
+\chapter{Testing and Validation}
+\section{Unit Testing Strategy}
+The project includes more than 80 unit tests spanning cryptography, virtual file system logic, container serialization, and service-layer behavior. Comprehensive testing is important because security code frequently fails in edge cases.
+
+\section{Coverage Areas}
+The tests cover:
+\begin{itemize}
+  \item encryption and decryption correctness,
+  \item wrong-password handling,
+  \item container read/write behavior,
+  \item folder and file tree logic,
+  \item service-layer state transitions,
+  \item password-change operations,
+  \item auto-lock behavior and warnings.
+\end{itemize}
+
+\section{Security Audit Summary}
+A security audit was completed and did not identify critical vulnerabilities in the design as implemented. This does not mean the system is invulnerable; rather, it indicates that no severe issues were found within the examined scope and assumptions.
+
+\section{Observed JVM Limitations}
+The audit identified some practical limitations inherited from the runtime environment:
+\begin{itemize}
+  \item Java password input components may internally use \texttt{String} representations.
+  \item Memory zeroing cannot be absolutely guaranteed for all intermediate copies.
+  \item Encoding and framework operations may create temporary data copies.
+\end{itemize}
+These observations are important because they prevent overstatement of memory hygiene guarantees.
+
+\chapter{Threat Model and Honest Security Model}
+\section{Protected Assets}
+The system protects the vault while it is stored as an encrypted file and while it is transferred between locations. It also raises the cost of offline brute-force attempts by using Argon2id and AES-GCM correctly.
+
+\section{Out of Scope}
+The system does not protect exported files, malware-infected endpoints, keyloggers, memory forensics, or the unlocked runtime state. If a hostile program runs on the host, it may still observe user activity or memory contents.
+
+\section{Boundary of Responsibility}
+The boundary of responsibility is a central academic point in the project. Good security software must state clearly what it protects and what it does not protect. \projname{} is designed to be honest in this regard.
+
+\begin{table}[H]
+\centering
+\caption{Security model summary of \projname{}}
+\begin{tabular}{p{0.28\textwidth} p{0.58\textwidth}}
+\csname toprule\endcsname
+{\bfseries Category} & {\bfseries Status} \\
+\midrule
+Vault at rest & Protected by AES-256-GCM and password-derived key wrapping \\
+Vault transfer/storage as a file & Protected as an encrypted container \\
+Brute-force resistance & Improved by Argon2id and strong password guidance \\
+Exported files & Not protected by the vault \\
+Malware/keyloggers & Not protected \\
+Memory forensics & Not guaranteed to be protected \\
+Unlocked vault state & Exposed to the current runtime trust boundary \\
+\bottomrule
+\end{tabular}
+\label{tab:security-model}
+\end{table}
+
+\chapter{Comparison with Other Systems}
+\section{Comparison with VeraCrypt}
+VeraCrypt is a mature disk and volume encryption tool with kernel-level integration and broad system protection. \projname{} differs in that it is Java-only, application-level, and centered on an explicit import/export model. This makes it simpler to understand for controlled workflows, though it does not offer the same class of system-wide protection.
+
+\section{Comparison with Disk Encryption}
+Disk encryption protects the entire system volume. \projname{} protects selected files only. This narrower scope gives the user more flexibility and portability, but it also means that protection is limited to the vault boundary.
+
+\begin{table}[H]
+\centering
+\caption{Comparison of \projname{} with common alternatives}
+\begin{tabular}{p{0.22\textwidth} p{0.23\textwidth} p{0.23\textwidth} p{0.23\textwidth}}
+\csname toprule\endcsname
+{\bfseries Feature} & {\bfseries AegisVault-J} & {\bfseries VeraCrypt} & {\bfseries Disk Encryption} \\
+\midrule
+Protection scope & Selected files in a vault & Volumes/containers & Entire disk/system \\
+User model & Explicit import/export & Mounted or container-based & Transparent to user after setup \\
+Platform integration & Java application & Native system integration & OS-level integration \\
+Portability & High & High to moderate & Low to moderate \\
+Granularity & Fine-grained file control & Volume-level control & Whole-device control \\
+Kernel dependency & None & Typically low-level integration & High \\
+\bottomrule
+\end{tabular}
+\label{tab:comparison}
+\end{table}
+
+\chapter{Complexity Analysis}
+\section{Technical Complexity}
+The project combines several advanced topics: cryptography, secure key management, logical file system abstraction, desktop UI design, and memory safety considerations. Even though the implementation is application-level, the conceptual design is nontrivial because each layer must preserve security boundaries.
+
+\section{Software Engineering Complexity}
+The software engineering challenge lies in coordinating usability and security. A system that is secure but hard to understand may be used incorrectly, while a system that is easy to use but insecure undermines its purpose. The explicit workflow chosen here attempts to balance these concerns.
+
+\section{Academic Value}
+From an academic perspective, the project demonstrates secure design tradeoffs, threat modeling discipline, and the use of strong modern cryptographic primitives. It is suitable for a B.Tech Minor Project because it is practical yet sufficiently deep in design reasoning.
+
+\chapter{Limitations}
+\section{Runtime Trust Boundary}
+Once the vault is open, the application depends on the security of the host runtime. If the host is compromised, the vault cannot fully defend itself. This is a standard limitation for user-space security tools.
+
+\section{Memory Hygiene}
+Best-effort wiping does not guarantee that all sensitive material disappears from memory. Garbage collection, JIT compilation, temporary buffers, and framework internals can all retain data longer than intended.
+
+\section{No Protection for Exported Files}
+Exported files are ordinary files and must be protected separately. This limitation is deliberate and consistent with the design model.
+
+\section{No Mounted Filesystem}
+The project does not use FUSE, Dokany, or a kernel-integrated mount layer. This keeps the application lightweight but means it behaves like a container manager rather than a transparent filesystem.
+
+\chapter{Future Enhancements}
+\section{Multiple Encryption Algorithms}
+Possible future work includes support for additional ciphers such as Serpent and Twofish, or cascade encryption modes. Such extensions would require careful benchmarking and interoperability planning.
+
+\section{File Preview}
+An internal file preview mechanism could improve usability. However, previews must be designed so that they do not leak content outside the vault boundary.
+
+\section{Command-Line Interface}
+A CLI version could support scripted backups, automation, and lightweight workflows. A CLI would also complement the GUI by serving advanced users.
+
+\section{Integrity Verification Tools}
+Additional verification tools could help users confirm the integrity of backups, container metadata, and restore operations over time.
+
+\chapter{Conclusion}
+\projname{} is a secure encrypted container system that demonstrates practical application of authenticated encryption, password-based key derivation, controlled file management, and explicit security boundaries. Its main contribution is not merely technical encryption, but the clear operational model that distinguishes protected vault data from unprotected exported files. The project is valuable as a B.Tech Minor Project because it integrates cryptography, application design, secure storage concepts, and honest threat modeling into a coherent software system.
+
+The system does not claim absolute security. Instead, it provides a realistic and well-defined security tool with clear protections, explicit limitations, and an architecture suited to controlled personal data storage.
+
+\appendix
+\chapter{Suggested Diagram Descriptions for Presentation or Viva}
+\section{System Architecture Diagram}
+Draw five horizontal layers: UI, service, virtual file system, encryption engine, and container file. Show arrows flowing downward to indicate dependency.
+
+\section{Key Derivation Diagram}
+Show the sequence Password $\rightarrow$ Argon2id $\rightarrow$ KEK $\rightarrow$ decrypt MVK $\rightarrow$ access vault data. Annotate that the password is never stored.
+
+\section{Operational Workflow Diagram}
+Show Import, Encrypt, Lock, and Export as a left-to-right flow. Mark the export step with a note that exported files are outside vault protection.
+
+\chapter{References}
+\begin{thebibliography}{9}
+\bibitem{nistaes} NIST, \textit{Recommendation for Block Cipher Modes of Operation: GCM and GMAC}, NIST Special Publication.
+\bibitem{argon2} A. Biryukov, D. Dinu, and D. Khovratovich, \textit{Argon2: the Memory-Hard Function for Password Hashing and Proof-of-Work Applications}.
+\bibitem{bouncycastle} The Legion of the Bouncy Castle, \textit{Bouncy Castle Cryptography APIs}.
+\bibitem{javafx} Oracle, \textit{JavaFX Documentation}.
+\end{thebibliography}
+
+\end{document}

@@ -1,0 +1,10 @@
+\begin{longtable}[l]{l l}
+$K_{MVK}$        & Master Vault Key (256-bit symmetric key)                       \\
+$K_{KEK}$        & Key Encryption Key (derived from user password)                \\
+$P$              & User password                                                  \\
+$S$              & Salt value for key derivation                                  \\
+$IV$             & Initialization Vector for AES-GCM                             \\
+$T$              & Authentication tag produced by GCM mode                        \\
+$C$              & Ciphertext output of encryption                                \\
+$M$              & Memory cost parameter for Argon2id (64 MB)                     \\
+\end{longtable}

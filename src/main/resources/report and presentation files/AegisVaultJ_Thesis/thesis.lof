@@ -1,0 +1,15 @@
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {3.1}{\ignorespaces Operational workflow of AegisVault-J{}. The vault enforces a deliberate sequence of actions rather than hidden background encryption.}}{7}{figure.caption.6}%
+\contentsline {figure}{\numberline {3.2}{\ignorespaces Layered architecture of AegisVault-J{}. The design separates presentation, business logic, logical file organization, cryptography, and persistent storage.}}{8}{figure.caption.7}%
+\contentsline {figure}{\numberline {3.3}{\ignorespaces Module design of AegisVault-J{} showing the four core modules and their interactions.}}{10}{figure.caption.8}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Password-to-vault access flow. Authentication succeeds through correct cryptographic decryption rather than direct password comparison.}}{14}{figure.caption.9}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {5.1}{\ignorespaces Security model of AegisVault-J{} showing the boundary between protected vault data and unprotected external data.}}{18}{figure.caption.10}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {6.1}{\ignorespaces Vault creation and login screen of AegisVault-J{}. Users can create a new vault or open an existing one with password authentication.}}{22}{figure.caption.11}%
+\contentsline {figure}{\numberline {6.2}{\ignorespaces Main vault file browser of AegisVault-J{}. The interface provides a familiar file manager layout with vault-specific operations in the toolbar.}}{23}{figure.caption.12}%
+\contentsline {figure}{\numberline {6.3}{\ignorespaces Import/Export dialog of AegisVault-J{}. The interface shows file selection, encryption progress, and security warnings for export operations.}}{24}{figure.caption.13}%
+\addvspace {10\p@ }

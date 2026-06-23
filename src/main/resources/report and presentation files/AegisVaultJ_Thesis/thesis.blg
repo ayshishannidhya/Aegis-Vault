@@ -1,0 +1,68 @@
+This is BibTeX, Version 0.99d
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: thesis.aux
+Reallocating 'name_of_file' (item size: 1) to 13 items.
+A level-1 auxiliary file: chapter1.aux
+Reallocating 'name_of_file' (item size: 1) to 13 items.
+A level-1 auxiliary file: chapter2.aux
+Reallocating 'name_of_file' (item size: 1) to 13 items.
+A level-1 auxiliary file: chapter3.aux
+Reallocating 'name_of_file' (item size: 1) to 13 items.
+A level-1 auxiliary file: chapter4.aux
+Reallocating 'name_of_file' (item size: 1) to 13 items.
+A level-1 auxiliary file: chapter5.aux
+Reallocating 'name_of_file' (item size: 1) to 13 items.
+A level-1 auxiliary file: chapter6.aux
+Reallocating 'name_of_file' (item size: 1) to 13 items.
+A level-1 auxiliary file: chapter7.aux
+Reallocating 'name_of_file' (item size: 1) to 10 items.
+Reallocating 'name_of_file' (item size: 1) to 6 items.
+The style file: unsrt.bst
+Reallocating 'name_of_file' (item size: 1) to 18 items.
+A level-1 auxiliary file: dissemination.aux
+Database file #1: reference.bib
+Warning--can't use both volume and number fields in mcgraw_software_security
+Warning--empty booktitle in cloud_storage_security
+Warning--can't use both volume and number fields in cloud_storage_security
+You've used 22 entries,
+            1791 wiz_defined-function locations,
+            572 strings with 6908 characters,
+and the built_in function-call counts, 4492 in all, are:
+= -- 443
+> -- 131
+< -- 8
++ -- 56
+- -- 34
+* -- 171
+:= -- 667
+add.period$ -- 84
+call.type$ -- 22
+change.case$ -- 22
+chr.to.int$ -- 0
+cite$ -- 25
+duplicate$ -- 214
+empty$ -- 494
+format.name$ -- 34
+if$ -- 1077
+int.to.chr$ -- 0
+int.to.str$ -- 22
+missing$ -- 13
+newline$ -- 126
+num.names$ -- 22
+pop$ -- 110
+preamble$ -- 1
+purify$ -- 0
+quote$ -- 0
+skip$ -- 115
+stack$ -- 0
+substring$ -- 185
+swap$ -- 76
+text.length$ -- 8
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 0
+warning$ -- 3
+while$ -- 42
+width$ -- 24
+write$ -- 263
+(There were 3 warnings)

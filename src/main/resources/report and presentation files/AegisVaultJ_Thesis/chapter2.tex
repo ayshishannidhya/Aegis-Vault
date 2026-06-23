@@ -1,0 +1,24 @@
+\chapter{Literature and Conceptual Context}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+This chapter reviews existing approaches to file and data protection, placing \projname{} \index{Literature Review} within the broader landscape of encryption tools and container systems. The review covers full-disk encryption, archive-based encryption, cloud vaults, and application-level container systems.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Full-Disk Encryption}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Full-disk encryption \index{Full-disk encryption} protects an entire storage volume and is typically integrated into the operating system or boot chain \cite{veracrypt}. It is useful when the objective is to protect data at rest for the whole device. However, it is broader than the requirements of a selective file vault. \projname{} differs by limiting protection to chosen files and by maintaining a visible import/export workflow.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Archive-Based Encryption}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Encrypted archives \index{Archive-based encryption} and password-protected compressed files can protect groups of files, but they are often more suited to static bundles than to an interactive vault with folder hierarchy, backup, and file-management operations. AegisVault-J extends the archive idea into a controlled container with structured internal representation.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Cloud Vaults}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Cloud-based vaults \index{Cloud vaults} offer convenience and synchronization, but they require trust in a third party and depend on network availability and service policies. \projname{} deliberately avoids that trust model by keeping the vault local and portable.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Application-Level Container Systems}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Application-level encrypted containers \index{Application-level containers} occupy a middle ground between simple archives and full filesystem encryption. They are suitable when the user wants secure file storage without kernel-level integration. \projname{} belongs to this category.

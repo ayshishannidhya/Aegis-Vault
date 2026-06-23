@@ -2,6 +2,11 @@
  * Copyright (c) 2026 Aegis Vault
  * All rights reserved.
  *
+ * Author: Ayshi Shannidhya Panda
+ * Email:  asp45624@gmail.com
+ * Web:    https://ayshishannidhya.online
+ * GitHub: https://github.com/ayshishannidhya
+ *
  * This software, known as "AegisVault-J", including its source code, documentation,
  * design, and associated materials, is the intellectual property of the author.
  *
@@ -48,11 +53,15 @@ public class VaultContainer implements Closeable {
     private RandomAccessFile raf;
     private FileChannel channel;
     private FileLock lock;
+    private int batchDepth;
+    private boolean metadataDirty;
 
     public VaultContainer(Path vaultPath) {
         this.vaultPath = vaultPath;
         this.open = false;
         this.fileData = new HashMap<>();
+        this.batchDepth = 0;
+        this.metadataDirty = false;
     }
 
     public void create(char[] password) {
@@ -99,6 +108,8 @@ public class VaultContainer implements Closeable {
             channel.force(true);
 
             this.fileData = new HashMap<>();
+            this.batchDepth = 0;
+            this.metadataDirty = false;
             this.open = true;
         } catch (IOException e) {
             throw new VaultException("Failed to create vault file", e);
@@ -164,6 +175,8 @@ public class VaultContainer implements Closeable {
             byte[] decryptedMetadata = AesGcmCipher.decrypt(encryptedMetadata, vaultKey);
             this.fileData = deserializeMetadata(decryptedMetadata);
 
+            this.batchDepth = 0;
+            this.metadataDirty = false;
             this.open = true;
             success = true;
         } catch (IOException e) {
@@ -221,13 +234,31 @@ public class VaultContainer implements Closeable {
         }
         byte[] encrypted = AesGcmCipher.encrypt(content, vaultKey);
         fileData.put(fileId, encrypted);
-        persistMetadata();
+        markMetadataDirty();
     }
 
     public void deleteFile(String fileId) {
         ensureOpen();
         if (fileData.remove(fileId) != null) {
-            persistMetadata();
+            markMetadataDirty();
+        }
+    }
+
+    public void beginBatch() {
+        ensureOpen();
+        batchDepth++;
+    }
+
+    public void endBatch() {
+        ensureOpen();
+        if (batchDepth == 0) {
+            throw new IllegalStateException("No batch operation in progress");
+        }
+
+        batchDepth--;
+        if (batchDepth == 0 && metadataDirty) {
+            persistMetadataNow();
+            metadataDirty = false;
         }
     }
 
@@ -276,6 +307,8 @@ public class VaultContainer implements Closeable {
         this.open = false;
         this.header = null;
         this.fileData = new HashMap<>();
+        this.batchDepth = 0;
+        this.metadataDirty = false;
     }
 
     private void ensureOpen() {
@@ -288,7 +321,15 @@ public class VaultContainer implements Closeable {
         return vaultPath;
     }
 
-    private void persistMetadata() {
+    private void markMetadataDirty() {
+        metadataDirty = true;
+        if (batchDepth == 0) {
+            persistMetadataNow();
+            metadataDirty = false;
+        }
+    }
+
+    private void persistMetadataNow() {
         try {
             byte[] serialized = serializeMetadata(fileData);
             byte[] encrypted = AesGcmCipher.encrypt(serialized, vaultKey);

@@ -2,6 +2,11 @@
  * Copyright (c) 2026 Aegis Vault
  * All rights reserved.
  *
+ * Author: Ayshi Shannidhya Panda
+ * Email:  asp45624@gmail.com
+ * Web:    https://ayshishannidhya.online
+ * GitHub: https://github.com/ayshishannidhya
+ *
  * This software, known as "AegisVault-J", including its source code, documentation,
  * design, and associated materials, is the intellectual property of the author.
  *
@@ -36,9 +41,17 @@ public final class ImportExportUtil {
             throw new IllegalArgumentException("Source must be a regular file");
         }
 
-        byte[] content = Files.readAllBytes(source);
-        String targetPath = normalizePath(targetDir, source.getFileName().toString());
-        service.createFile(targetPath, content);
+        try {
+            service.runInBatch(() -> {
+                byte[] content = Files.readAllBytes(source);
+                String targetPath = normalizePath(targetDir, source.getFileName().toString());
+                service.createFile(targetPath, content);
+            });
+        } catch (IOException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new IOException("Failed to import file", e);
+        }
         return 1;
     }
 
@@ -48,32 +61,41 @@ public final class ImportExportUtil {
         }
 
         int[] count = {0};
-        String basePath = normalizePath(targetDir, source.getFileName().toString());
-        service.createDirectory(basePath);
-        count[0]++;
 
-        Files.walkFileTree(source, new SimpleFileVisitor<>() {
-            @Override
-            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-                if (!dir.equals(source)) {
-                    String relativePath = source.relativize(dir).toString().replace("\\", "/");
-                    String vaultPath = normalizePath(basePath, relativePath);
-                    service.createDirectory(vaultPath);
-                    count[0]++;
-                }
-                return FileVisitResult.CONTINUE;
-            }
-
-            @Override
-            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                String relativePath = source.relativize(file).toString().replace("\\", "/");
-                String vaultPath = normalizePath(basePath, relativePath);
-                byte[] content = Files.readAllBytes(file);
-                service.createFile(vaultPath, content);
+        try {
+            service.runInBatch(() -> {
+                String basePath = normalizePath(targetDir, source.getFileName().toString());
+                service.createDirectory(basePath);
                 count[0]++;
-                return FileVisitResult.CONTINUE;
-            }
-        });
+
+                Files.walkFileTree(source, new SimpleFileVisitor<>() {
+                    @Override
+                    public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                        if (!dir.equals(source)) {
+                            String relativePath = source.relativize(dir).toString().replace("\\", "/");
+                            String vaultPath = normalizePath(basePath, relativePath);
+                            service.createDirectory(vaultPath);
+                            count[0]++;
+                        }
+                        return FileVisitResult.CONTINUE;
+                    }
+
+                    @Override
+                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                        String relativePath = source.relativize(file).toString().replace("\\", "/");
+                        String vaultPath = normalizePath(basePath, relativePath);
+                        byte[] content = Files.readAllBytes(file);
+                        service.createFile(vaultPath, content);
+                        count[0]++;
+                        return FileVisitResult.CONTINUE;
+                    }
+                });
+            });
+        } catch (IOException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new IOException("Failed to import directory", e);
+        }
 
         return count[0];
     }

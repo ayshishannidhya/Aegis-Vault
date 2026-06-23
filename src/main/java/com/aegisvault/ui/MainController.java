@@ -2,6 +2,11 @@
  * Copyright (c) 2026 Aegis Vault
  * All rights reserved.
  *
+ * Author: Ayshi Shannidhya Panda
+ * Email:  asp45624@gmail.com
+ * Web:    https://ayshishannidhya.online
+ * GitHub: https://github.com/ayshishannidhya
+ *
  * This software, known as "AegisVault-J", including its source code, documentation,
  * design, and associated materials, is the intellectual property of the author.
  *
@@ -15,11 +20,19 @@
  */
 package com.aegisvault.ui;
 
+import com.aegisvault.audit.AuditEventType;
+import com.aegisvault.audit.AuditLog;
+import com.aegisvault.crypto.HardwareKeyProtection;
+import com.aegisvault.crypto.KeyProtectionConfig;
 import com.aegisvault.crypto.experimental.CryptoOptionsDialog;
 import com.aegisvault.crypto.experimental.CryptoSettings;
 import com.aegisvault.crypto.experimental.EntropyCollectionDialog;
+import com.aegisvault.enterprise.EnterpriseConfig;
+import com.aegisvault.enterprise.MultiVaultManager;
 import com.aegisvault.exception.AuthenticationException;
 import com.aegisvault.service.VaultService;
+import com.aegisvault.sync.SyncConfig;
+import com.aegisvault.sync.SyncEngine;
 import com.aegisvault.vfs.VfsEntry;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -188,6 +201,11 @@ public class MainController {
                 new SeparatorMenuItem(), newFolderMenuItem, new SeparatorMenuItem(),
                 changePasswordMenuItem, backupMenuItem);
 
+        MenuItem auditLogMenuItem = new MenuItem("View Audit Log...");
+        auditLogMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.A, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN));
+        auditLogMenuItem.setOnAction(e -> showAuditLog());
+        vaultMenu.getItems().addAll(new SeparatorMenuItem(), auditLogMenuItem);
+
         settingsMenu = new Menu("_Settings");
         settingsMenu.setMnemonicParsing(true);
 
@@ -197,7 +215,20 @@ public class MainController {
         MenuItem autoLockSettings = new MenuItem("Auto-Lock Timeout...");
         autoLockSettings.setOnAction(e -> showAutoLockSettings());
 
-        settingsMenu.getItems().addAll(encryptionOptions, new SeparatorMenuItem(), autoLockSettings);
+        MenuItem keyProtectionSettings = new MenuItem("Key Protection...");
+        keyProtectionSettings.setOnAction(e -> showKeyProtectionSettings());
+
+        MenuItem cloudSyncSettings = new MenuItem("Cloud Sync...");
+        cloudSyncSettings.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN));
+        cloudSyncSettings.setOnAction(e -> showCloudSyncDialog());
+
+        MenuItem enterpriseSettingsItem = new MenuItem("Enterprise Settings...");
+        enterpriseSettingsItem.setOnAction(e -> showEnterpriseSettings());
+
+        settingsMenu.getItems().addAll(encryptionOptions, new SeparatorMenuItem(),
+                keyProtectionSettings, cloudSyncSettings,
+                new SeparatorMenuItem(), autoLockSettings,
+                new SeparatorMenuItem(), enterpriseSettingsItem);
 
         Menu helpMenu = new Menu("_Help");
         helpMenu.setMnemonicParsing(true);
@@ -1144,6 +1175,111 @@ public class MainController {
         });
     }
 
+    private void showAuditLog() {
+        if (!vaultService.isVaultOpen()) {
+            showError("No Vault Open", "Please open a vault to view audit logs.");
+            return;
+        }
+        AuditLog auditLog = vaultService.getAuditLog();
+        if (auditLog == null) {
+            showError("Audit Log Unavailable", "Audit log is not available.");
+            return;
+        }
+        AuditLogViewer viewer = new AuditLogViewer(auditLog, stage);
+        viewer.showAndWait();
+    }
+
+    private void showKeyProtectionSettings() {
+        KeyProtectionConfig kpConfig = vaultService.getKeyProtectionConfig();
+        if (kpConfig == null) {
+            kpConfig = KeyProtectionConfig.load();
+        }
+        boolean osAvailable = HardwareKeyProtection.isOsKeystoreAvailable();
+        String keystoreType = HardwareKeyProtection.getKeystoreType();
+        List<String> kpOptions = new ArrayList<>();
+        kpOptions.add("Software Only (default)");
+        if (osAvailable) {
+            kpOptions.add("OS Keystore (" + keystoreType + ")");
+            kpOptions.add("OS Keystore with Fallback");
+        }
+        String currentChoice = switch (kpConfig.getMode()) {
+            case SOFTWARE_ONLY -> "Software Only (default)";
+            case OS_KEYSTORE -> "OS Keystore (" + keystoreType + ")";
+            case OS_KEYSTORE_WITH_FALLBACK -> "OS Keystore with Fallback";
+        };
+        ChoiceDialog<String> kpDialog = new ChoiceDialog<>(currentChoice, kpOptions);
+        kpDialog.setTitle("Key Protection Settings");
+        kpDialog.setHeaderText("Hardware-Backed Key Protection");
+        kpDialog.setContentText("Protection mode:");
+        if (!osAvailable) {
+            kpDialog.setHeaderText("Hardware-Backed Key Protection\n(OS Keystore not available on this platform)");
+        }
+        KeyProtectionConfig finalKpConfig = kpConfig;
+        kpDialog.showAndWait().ifPresent(choice -> {
+            KeyProtectionConfig.KeyProtectionMode mode;
+            if (choice.startsWith("OS Keystore (")) {
+                mode = KeyProtectionConfig.KeyProtectionMode.OS_KEYSTORE;
+            } else if (choice.startsWith("OS Keystore with")) {
+                mode = KeyProtectionConfig.KeyProtectionMode.OS_KEYSTORE_WITH_FALLBACK;
+            } else {
+                mode = KeyProtectionConfig.KeyProtectionMode.SOFTWARE_ONLY;
+            }
+            finalKpConfig.setMode(mode);
+            finalKpConfig.save();
+            vaultService.setKeyProtectionConfig(finalKpConfig);
+            AuditLog auditLog = vaultService.getAuditLog();
+            if (auditLog != null) {
+                AuditEventType eventType = mode == KeyProtectionConfig.KeyProtectionMode.SOFTWARE_ONLY
+                        ? AuditEventType.KEY_PROTECTION_DISABLED
+                        : AuditEventType.KEY_PROTECTION_ENABLED;
+                auditLog.record(eventType, "Mode: " + mode.name());
+            }
+            updateStatus("Key protection: " + choice);
+            showInfo("Key Protection", "Key protection mode set to: " + choice);
+        });
+    }
+
+    private void showCloudSyncDialog() {
+        EnterpriseConfig entConfig = vaultService.getEnterpriseConfig();
+        if (entConfig != null && !entConfig.isSyncAllowed()) {
+            showError("Sync Disabled", "Cloud synchronization is disabled by enterprise policy.");
+            return;
+        }
+        SyncEngine syncEngine = vaultService.getSyncEngine();
+        if (syncEngine == null) {
+            syncEngine = new SyncEngine();
+            vaultService.setSyncEngine(syncEngine);
+        }
+        String vaultId = vaultService.getCurrentVaultPath() != null
+                ? vaultService.getCurrentVaultPath().getFileName().toString() : "default";
+        SyncConfig syncCfg = vaultService.getSyncConfig();
+        if (syncCfg == null) {
+            syncCfg = SyncConfig.load(vaultId);
+        }
+        Path vaultPath = vaultService.getCurrentVaultPath();
+        SyncDialog syncDialog = new SyncDialog(syncCfg, syncEngine, vaultPath, stage);
+        Optional<SyncConfig> syncResult = syncDialog.showAndWait();
+        syncResult.ifPresent(newConfig -> {
+            vaultService.setSyncConfig(newConfig);
+            newConfig.save(vaultId);
+            updateStatus("Cloud sync: " + (newConfig.isEnabled() ? "Enabled" : "Disabled"));
+        });
+    }
+
+    private void showEnterpriseSettings() {
+        EnterpriseConfig entCfg = vaultService.getEnterpriseConfig();
+        if (entCfg == null) {
+            entCfg = new EnterpriseConfig();
+        }
+        MultiVaultManager vaultManager = new MultiVaultManager();
+        if (vaultService.getCurrentVaultPath() != null) {
+            vaultManager.registerVault(vaultService.getCurrentVaultPath(),
+                    vaultService.getCurrentVaultPath().getFileName().toString());
+        }
+        EnterpriseSettingsDialog entDialog = new EnterpriseSettingsDialog(entCfg, vaultManager, stage);
+        entDialog.showAndWait();
+    }
+
     private void showShortcutsDialog() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Keyboard Shortcuts");
@@ -1159,7 +1295,9 @@ public class MainController {
                 "  Ctrl+Shift+I  Import folder\n" +
                 "  Ctrl+E     Export selected\n" +
                 "  Ctrl+D     New folder\n" +
-                "  Ctrl+B     Backup vault\n\n" +
+                "  Ctrl+B     Backup vault\n" +
+                "  Ctrl+Shift+A  View audit log\n" +
+                "  Ctrl+Shift+S  Cloud sync\n\n" +
                 "Navigation:\n" +
                 "  Enter      Navigate into folder\n" +
                 "  Backspace  Go to parent folder\n" +

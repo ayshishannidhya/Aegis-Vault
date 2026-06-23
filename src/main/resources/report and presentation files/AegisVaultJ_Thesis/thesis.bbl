@@ -1,0 +1,140 @@
+\begin{thebibliography}{10}
+
+\bibitem{ferguson_cryptoeng}
+Niels Ferguson, Bruce Schneier, and Tadayoshi Kohno.
+\newblock {\em Cryptography Engineering: Design Principles and Practical
+  Applications}.
+\newblock Wiley, 1st edition, 2010.
+
+\bibitem{mcgraw_software_security}
+Gary McGraw.
+\newblock Software security: Building security in.
+\newblock In {\em IEEE Security \& Privacy}, volume~2, pages 80--83. IEEE,
+  2004.
+
+\bibitem{veracrypt}
+Pascal Junod and Alain Karber.
+\newblock A security analysis of {VeraCrypt}: Taking a closer look at full disk
+  encryption.
+\newblock {\em IACR Cryptology ePrint Archive}, 2020.
+\newblock Report 2020/1494.
+
+\bibitem{nist_keywrap}
+{National Institute of Standards and Technology}.
+\newblock Recommendation for block cipher modes of operation: Methods for key
+  wrapping.
+\newblock NIST Special Publication 800-38F, 2012.
+\newblock U.S. Department of Commerce.
+
+\bibitem{halevi_keywrap}
+Shai Halevi and Phillip Rogaway.
+\newblock A tweakable enciphering mode.
+\newblock In {\em Advances in Cryptology -- CRYPTO 2003}, pages 482--499.
+  Springer, 2003.
+
+\bibitem{nistaes}
+{National Institute of Standards and Technology}.
+\newblock Recommendation for block cipher modes of operation:
+  {G}alois/{C}ounter mode ({GCM}) and {GMAC}.
+\newblock NIST Special Publication 800-38D, 2007.
+\newblock U.S. Department of Commerce.
+
+\bibitem{aes_fips197}
+{National Institute of Standards and Technology}.
+\newblock Advanced encryption standard ({AES}).
+\newblock Federal Information Processing Standards Publication 197, 2001.
+\newblock U.S. Department of Commerce.
+
+\bibitem{rogaway_ae}
+Phillip Rogaway.
+\newblock Authenticated-encryption with associated-data.
+\newblock {\em Proceedings of the 9th ACM Conference on Computer and
+  Communications Security (CCS)}, pages 98--107, 2002.
+
+\bibitem{argon2}
+Alex Biryukov, Daniel Dinu, and Dmitry Khovratovich.
+\newblock Argon2: New generation of memory-hard functions for password hashing
+  and other applications.
+\newblock In {\em 2016 IEEE European Symposium on Security and Privacy
+  (EuroS\&P)}, pages 292--302. IEEE, 2016.
+
+\bibitem{bonneau_passwords}
+Joseph Bonneau.
+\newblock The science of guessing: Analyzing an anonymized corpus of 70 million
+  passwords.
+\newblock In {\em 2012 IEEE Symposium on Security and Privacy}, pages 538--552.
+  IEEE, 2012.
+
+\bibitem{nist_password}
+{National Institute of Standards and Technology}.
+\newblock Digital identity guidelines: Authentication and lifecycle management.
+\newblock NIST Special Publication 800-63B, 2017.
+\newblock U.S. Department of Commerce.
+
+\bibitem{oaks_java_security}
+Scott Oaks.
+\newblock {\em Java Security}.
+\newblock O'Reilly Media, 2nd edition, 2001.
+\newblock Comprehensive guide to Java platform security architecture.
+
+\bibitem{javafx}
+{Oracle Corporation}.
+\newblock Java{FX} documentation.
+\newblock \url{https://openjfx.io/}, 2024.
+\newblock Rich client platform for Java desktop applications.
+
+\bibitem{bouncycastle}
+{The Legion of the Bouncy Castle}.
+\newblock The {L}egion of the {B}ouncy {C}astle -- {J}ava cryptography {APIs}.
+\newblock \url{https://www.bouncycastle.org/}, 2024.
+\newblock Open-source cryptographic API provider for Java.
+
+\bibitem{nist_hsm}
+{National Institute of Standards and Technology}.
+\newblock Security requirements for cryptographic modules.
+\newblock Federal Information Processing Standards Publication 140-3, 2019.
+\newblock U.S. Department of Commerce.
+
+\bibitem{java_keystore}
+{Oracle Corporation}.
+\newblock Java platform, standard edition security developer's guide.
+\newblock \url{https://docs.oracle.com/en/java/javase/21/security/}, 2024.
+\newblock KeyStore, KeyManager, and TrustManager API documentation.
+
+\bibitem{tpm_security}
+Will Arthur, David Challener, and Kenneth Goldman.
+\newblock A practical guide to {TPM} 2.0: Using the new {T}rusted {P}latform
+  {M}odule in the new age of security.
+\newblock {\em Apress}, 2015.
+
+\bibitem{webdav_rfc}
+Lisa Dusseault.
+\newblock Http extensions for web distributed authoring and versioning
+  ({WebDAV}).
+\newblock RFC 4918, IETF, 2007.
+\newblock Internet Engineering Task Force.
+
+\bibitem{cloud_storage_security}
+S.~Subashini and V.~Kavitha.
+\newblock A survey on security issues in service delivery models of cloud
+  computing.
+\newblock volume~34, pages 1--11. Elsevier, 2011.
+
+\bibitem{nist_audit}
+{National Institute of Standards and Technology}.
+\newblock Guide to computer security log management.
+\newblock NIST Special Publication 800-92, 2006.
+\newblock U.S. Department of Commerce.
+
+\bibitem{sandhu_access_control}
+Ravi~S. Sandhu, Edward~J. Coyne, Hal~L. Feinstein, and Charles~E. Youman.
+\newblock Role-based access control models.
+\newblock {\em IEEE Computer}, 29(2):38--47, 1996.
+
+\bibitem{nist_km}
+{National Institute of Standards and Technology}.
+\newblock Recommendation for key management: Part 1 -- general.
+\newblock NIST Special Publication 800-57 Part 1, Revision 5, 2020.
+\newblock U.S. Department of Commerce.
+
+\end{thebibliography}

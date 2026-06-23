@@ -2,6 +2,11 @@
  * Copyright (c) 2026 Aegis Vault
  * All rights reserved.
  *
+ * Author: Ayshi Shannidhya Panda
+ * Email:  asp45624@gmail.com
+ * Web:    https://ayshishannidhya.online
+ * GitHub: https://github.com/ayshishannidhya
+ *
  * This software, known as "AegisVault-J", including its source code, documentation,
  * design, and associated materials, is the intellectual property of the author.
  *

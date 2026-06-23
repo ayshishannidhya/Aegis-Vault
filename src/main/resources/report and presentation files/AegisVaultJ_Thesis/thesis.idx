@@ -1,0 +1,22 @@
+\indexentry{AegisVault-J}{1}
+\indexentry{Literature Review}{4}
+\indexentry{Full-disk encryption}{4}
+\indexentry{Archive-based encryption}{4}
+\indexentry{Cloud vaults}{5}
+\indexentry{Application-level containers}{5}
+\indexentry{JavaFX}{8}
+\indexentry{Virtual file system}{9}
+\indexentry{Master Vault Key}{13}
+\indexentry{Key Encryption Key}{13}
+\indexentry{AES-256-GCM}{14}
+\indexentry{Argon2id}{15}
+\indexentry{SecureRandom}{15}
+\indexentry{Authenticated encryption}{17}
+\indexentry{Auto-lock}{17}
+\indexentry{Hardware key protection}{19}
+\indexentry{Audit logging}{19}
+\indexentry{Java}{21}
+\indexentry{JavaFX}{21}
+\indexentry{BouncyCastle}{23}
+\indexentry{Gradle}{24}
+\indexentry{VeraCrypt}{27}

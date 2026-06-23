@@ -1,0 +1,39 @@
+\setcounter{equation}{0}
+\chapter{Conclusions and Limitations}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conclusions}
+\projname{} is a secure encrypted container system that demonstrates practical application of authenticated encryption, password-based key derivation, controlled file management, and explicit security boundaries. Its main contribution is not merely technical encryption, but the clear operational model that distinguishes protected vault data from unprotected exported files.
+
+In the major project phase, the system has been significantly extended with four enterprise-grade features that were previously identified as future enhancements:
+\begin{itemize}
+  \item \textbf{Hardware-Backed Key Protection:} OS-level keystore integration (Windows-ROOT, macOS KeychainStore, Linux PKCS\#11) enables the Master Vault Key to be wrapped using platform-specific hardware security, providing defense-in-depth beyond password-based protection.
+  \item \textbf{Encrypted Cloud Vault Synchronization:} Local folder and WebDAV synchronization providers allow encrypted vault files to be backed up and synchronized across locations. Conflict detection, sync-on-close, and enterprise policy enforcement ensure data integrity.
+  \item \textbf{Detailed Access Audit Logs:} Every security-relevant vault operation is recorded with timestamps and stored within the encrypted vault. A searchable, filterable, and exportable audit viewer enables compliance monitoring and forensic analysis.
+  \item \textbf{Enterprise-Level Deployment Support:} Cascading policy configuration (defaults $\rightarrow$ user $\rightarrow$ system $\rightarrow$ registry), multi-vault management, silent installation support, and deployment reporting enable organizational deployment and IT administration.
+\end{itemize}
+
+These enhancements elevate \projname{} from a personal file vault to an enterprise-ready secure storage platform. The project is valuable as a B.Tech Major Project because it integrates cryptography, application design, secure storage concepts, enterprise software architecture, and honest threat modeling into a coherent software system.
+
+The system does not claim absolute security. Instead, it provides a realistic and well-defined security tool with clear protections, explicit limitations, and an architecture suited to both personal and organizational data storage.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Limitations}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Runtime Trust Boundary}
+Once the vault is open, the application depends on the security of the host runtime. If the host is compromised, the vault cannot fully defend itself. This is a standard limitation for user-space security tools.
+
+\subsection{Memory Hygiene}
+Best-effort wiping does not guarantee that all sensitive material disappears from memory. Garbage collection, JIT compilation, temporary buffers, and framework internals can all retain data longer than intended.
+
+\subsection{No Protection for Exported Files}
+Exported files are ordinary files and must be protected separately. This limitation is deliberate and consistent with the design model.
+
+\subsection{No Mounted Filesystem}
+The project does not use FUSE, Dokany, or a kernel-integrated mount layer. This keeps the application lightweight but means it behaves like a container manager rather than a transparent filesystem.
+
+\subsection{Hardware Key Protection Availability}
+The hardware-backed key protection depends on the availability of OS-level keystores, which may vary across platforms and configurations. On systems without supported keystores, the system falls back to software-only key protection.
+
+\subsection{Cloud Synchronization Trust}
+While the vault file is encrypted before synchronization, the synchronization endpoints themselves (network shares, WebDAV servers) are trusted to store the encrypted data reliably. Network availability and endpoint security are outside the system's control.

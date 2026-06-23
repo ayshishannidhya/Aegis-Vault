@@ -1,0 +1,26 @@
+\contentsline {chapter}{Certificate}{iii}{section*.1}%
+\contentsline {chapter}{Declaration}{v}{chapter*.2}%
+\contentsline {chapter}{Acknowledgements}{vii}{chapter*.3}%
+\contentsline {chapter}{Abstract}{ix}{chapter*.5}%
+\contentsline {chapter}{Acronyms}{xi}{chapter*.6}%
+\contentsline {chapter}{Notations}{xiii}{chapter*.7}%
+\contentsline {chapter}{List of Figures}{xv}{section*.8}%
+\contentsline {chapter}{List of Tables}{xvii}{section*.10}%
+\contentsline {chapter}{Contents}{xix}{section*.12}%
+\contentsline {chapter}{\numberline {1}Introduction}{1}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Motivation}{1}{section.1.1}%
+\contentsline {chapter}{\numberline {2}Literature Review}{3}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Introduction}{3}{section.2.1}%
+\contentsline {chapter}{\numberline {3}Dynamic Service Migration Algorithm}{5}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Introduction}{5}{section.3.1}%
+\contentsline {chapter}{\numberline {4}Smart Cloud Service Management Algorithm}{7}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Introduction}{7}{section.4.1}%
+\contentsline {chapter}{\numberline {5}Resource Management Algorithm for VM Migration}{9}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Introduction}{9}{section.5.1}%
+\contentsline {chapter}{\numberline {6}Energy-Aware and Revenue-Based Service Management Algorithms}{11}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Introduction}{11}{section.6.1}%
+\contentsline {chapter}{\numberline {7}Conclusions and Future Scope}{13}{chapter.7}%
+\contentsline {section}{\numberline {7.1}Conclusions}{13}{section.7.1}%
+\contentsline {chapter}{\hbox to\@tempdima {\hfil }References}{15}{section*.15}%
+\contentsline {chapter}{\hbox to\@tempdima {\hfil }Dissemination}{17}{section*.17}%
+\contentsline {chapter}{\hbox to\@tempdima {\hfil }Reprints of Published Papers}{19}{section*.21}%

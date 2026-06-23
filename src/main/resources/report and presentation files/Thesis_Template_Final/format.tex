@@ -1,0 +1,179 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                            This is format.tex                          %
+% you have to  put this file in the same directory with your report      %
+%                   Written by Er. Sohan Kumar Pande                     % 
+%                                                                        % 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%  Put packages you want to use here and 'fancyhdr' is required   %%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{fancyhdr}
+\usepackage{epsfig}
+\usepackage{cite}
+\usepackage{graphicx}
+\usepackage{amsmath}
+%\usepackage{theorem}
+
+\usepackage{amssymb}
+\usepackage{latexsym}
+\usepackage{epic}
+\usepackage{amsmath}
+\usepackage{blkarray, bigstrut}
+\usepackage{xparse}
+\usepackage[utf8]{inputenc}
+\usepackage[table]{xcolor}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{pgfplots}
+\usepackage{float}
+\floatstyle{plaintop}
+\restylefloat{table}
+\usepackage{enumitem}
+\usepackage{ragged2e}
+\usepackage[printonlyused]{acronym}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{caption}
+\hypersetup{hidelinks}
+\usepackage{etoolbox}
+\usepackage{longtable}
+\usepackage{times}
+\usepackage{setspace}
+\usepackage{pdfpages}
+\usepackage{vcell}
+\usepackage{adjustbox}
+\usepackage{imakeidx}
+\makeindex[columns=2]
+%\usepackage{amsthm}
+\usepackage{algorithm,algpseudocode}
+\usepackage{amsthm}
+\usepackage[tableposition=top]{caption}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+\newfloat{procedure}{htbp}{loa}
+\floatname{procedure}{Procedure}
+\renewcommand{\qedsymbol}{}
+\newtheorem{remark}{Remark}[section]
+\algnewcommand\algorithmicinput{\textbf{Input:}}
+\algnewcommand\INPUT{\item[\algorithmicinput]}
+\algnewcommand\algorithmicoutput{\textbf{Output:}}
+\algnewcommand\OUTPUT{\item[\algorithmicoutput]}
+\algnewcommand{\algorithmicand}{\textbf{ and }}
+\algnewcommand{\algorithmicor}{\textbf{ or }}
+\algnewcommand{\OR}{\algorithmicor}
+\algnewcommand{\AND}{\algorithmicand}
+
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{lem}[thm]{Lemma}
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem{cor}{Corollary}
+\newtheorem{conj}{Conjecture}[section]
+\theoremstyle{definition}
+\newtheorem{defn}{Definition}[section]
+\newtheorem{exmp}{Example}[section]
+\newtheorem{rem}{Remark}
+
+\setcounter{secnumdepth}{5} % how many sectioning levels to assign numbers to
+\setcounter{tocdepth}{5}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%        Change the name of Bibliography to References          %%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\renewcommand{\bibname}{References}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%                 Set line spacing = 1.5 here                   %%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\renewcommand{\baselinestretch}{1.5}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%                      Your fancy heading                       %%%%%%
+%%%%% For the final copy you need to remove '\bfseries\today' below %%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\pagestyle{fancy}
+\renewcommand{\chaptermark}[1]{\markright{\chaptername\ \thechapter.\ #1}}
+\renewcommand{\sectionmark}[1]{\markright{\thesection.\ #1}{}}
+%\renewcommand{\footrulewidth}{0.4pt}
+\lhead[\fancyplain{}{}]%
+      {\fancyplain{}{\bfseries\rightmark}}
+\chead[\fancyplain{}{}]%
+      {\fancyplain{}{}}
+\rhead[\fancyplain{}{}]%
+      {\fancyplain{}{\bfseries\thepage}}
+\lfoot[\fancyplain{}{}]%
+      {\fancyplain{}{}}
+\cfoot[\fancyplain{}{}]%
+      {\fancyplain{}{}}
+\rfoot[\fancyplain{}{}]%
+      {\fancyplain{}{\bfseries\today}}
+%%%%%%%%%%%%Here you set the space between the main text%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%and the start of the footnote%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\addtolength{\skip\footins}{5mm}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%      Define new counter so you can have the equation           %%%%%
+%%%%%                 number 4.2.1a for example                      %%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcounter{ind}
+\def\eqlabon{
+\setcounter{ind}{\value{equation}}\addtocounter{ind}{1}
+\setcounter{equation}{0}
+\renewcommand{\theequation}{\arabic{chapter}%
+         .\arabic{section}.\arabic{ind}\alph{equation}}}
+\def\eqlaboff{
+\renewcommand{\theequation}{\arabic{chapter}%
+         .\arabic{section}.\arabic{equation}}
+\setcounter{equation}{\value{ind}}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%           New theorem you want to use              %%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%{\theorembodyfont{\rmfamily}\newtheorem{Pro}{{\textbf Proposition}}[section]}
+%{\theorembodyfont{\rmfamily}\newtheorem{The}{{\textbf Theorem}}[section]}
+%{\theorembodyfont{\rmfamily}\newtheorem{Def}[The]{{\textbf Definition}}}
+%{\theorembodyfont{\rmfamily}\newtheorem{Cor}[The]{{\textbf Corollary}}}
+%{\theorembodyfont{\rmfamily}\newtheorem{Lem}[The]{{\textbf Lemma}}}
+%{\theorembodyfont{\rmfamily}\newtheorem{Exp}{{\textbf Example}}[section]}
+%\def\remark{\textbf{Remark}:}
+%\def\remarks{\textbf{Remarks}:}
+%\def\bproof{\textbf{Proof}: }
+%\def\eproof{\hfill$\Box$}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%             Bold font in math mode                      %%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\bv#1{\mbox{\boldmath$#1$}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%        New symbol which is not defined in Latex         %%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% The Mean INTegral
+% to be used in displaystyle
+\def\mint{\textstyle\mints\displaystyle}
+% to be used in textstyle
+\def\mints{\int\!\!\!\!\!\!{\rm-}\ }
+%
+% The Mean SUM
+% to be used in displaystyle
+\def\msum{\textstyle\msums\displaystyle}
+% to be used in textstyle
+\def\msums{\sum\!\!\!\!\!\!\!{\rm-}\ }
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%            Define your short cut here              %%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\poincare{Poincar\'e }
+\def\holder{H\"older }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

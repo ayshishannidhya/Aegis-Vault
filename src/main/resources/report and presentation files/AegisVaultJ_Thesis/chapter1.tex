@@ -1,0 +1,48 @@
+%\setcounter{equation}{0}
+\chapter{Introduction}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Background}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Digital information increasingly includes confidential documents, credentials, scanned certificates, personal records, and private archives. Such data often exists in heterogeneous storage environments, including laptops, removable drives, and cloud-backed folders. Conventional protection mechanisms such as full-disk encryption, operating system permissions, and ad hoc file compression do not always provide a simple, portable, and user-controlled way to protect a selected set of files \cite{ferguson_cryptoeng}. \projname{} \index{AegisVault-J} addresses this gap by offering a dedicated encrypted container with explicit user interaction boundaries.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Purpose of the Project}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+The purpose of \projname{} is to provide a digital safe for files. Rather than encrypting the entire disk or exposing a mounted filesystem, it stores user-selected content inside a single encrypted vault file. The design prioritizes clarity of operation, consistent security semantics, and portability across platforms. The user must consciously import files into the vault and export them back to the host system, ensuring that protected and unprotected states are never ambiguous.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Scope of the Work}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+The project scope includes vault creation, vault opening, importing and exporting files and folders, hierarchical vault organization, password change, auto-locking, backup support, password strength validation, and an audited cryptographic implementation. In the major project phase, the scope has been extended to include hardware-backed key protection using OS-level keystores, encrypted cloud vault synchronization via local folders and WebDAV, detailed access audit logging with a searchable viewer, and enterprise-level deployment support with cascading policy configuration and multi-vault management. The system protects the vault at rest and in transit as a file, but it does not protect exported files, malware-compromised hosts, or unlocked runtime memory from all threats.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Project Objectives}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+The major objectives are:
+\begin{enumerate}[label=\arabic*.]
+  \item To create a portable encrypted container for selected files.
+  \item To implement authenticated encryption using AES-256-GCM.
+  \item To derive a password-based encryption key using Argon2id.
+  \item To maintain a secure separation between vault data and exported data.
+  \item To implement a cross-platform Java application with a user-friendly interface.
+  \item To validate the implementation using unit tests and security review.
+  \item To integrate hardware-backed key protection via OS-level keystores for master key wrapping.
+  \item To implement encrypted cloud vault synchronization supporting local folder and WebDAV providers.
+  \item To provide detailed access audit logging with a searchable, exportable audit trail.
+  \item To support enterprise-level deployment with cascading policy configuration, multi-vault management, and deployment reporting.
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Problem Context}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Users who need to secure a small or medium set of sensitive files encounter several practical problems. Full-disk encryption is generally effective but is system-wide and may be complex to configure or explain. Manual file encryption is often tedious and prone to human error. Cloud vault services shift trust to third parties, introducing policy, availability, and privacy concerns. There is therefore a need for a simple, portable, and self-managed encrypted storage mechanism.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Motivation}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+The motivation behind \projname{} is to make file protection operationally clear. Security should not depend on hidden background behavior or assumptions about implicit protection. By making import, encryption, locking, and export explicit steps, the system reduces user confusion and supports better security decisions.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Design Philosophy}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+The project follows a security-first philosophy with honest threat modeling \cite{mcgraw_software_security}. This means that the system is designed to do one task well: securely store selected data in an encrypted container. It intentionally avoids overclaiming protection against every possible adversary. This approach is academically valuable because it reflects realistic boundaries found in secure system design.
