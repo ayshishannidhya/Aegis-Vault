@@ -145,7 +145,13 @@ public class VaultService implements Closeable {
     public List<VfsEntry> listDirectory(String path) {
         ensureVaultOpen();
         touchActivity();
-        return vfs.list(path);
+        List<VfsEntry> entries = vfs.list(path);
+        if ("/".equals(path)) {
+            entries = entries.stream()
+                    .filter(e -> !e.getName().startsWith("__"))
+                    .collect(java.util.stream.Collectors.toList());
+        }
+        return entries;
     }
 
     public VfsEntry createDirectory(String path) {
