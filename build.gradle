@@ -70,3 +70,109 @@ tasks.register('copyDependencies', Copy) {
     into layout.buildDirectory.dir("libs/dependencies")
 }
 
+tasks.register('packageWindowsPortable') {
+    dependsOn shadowJar
+    group = 'distribution'
+    description = 'Creates a portable Windows application bundle'
+
+    doLast {
+        def outputDir = file("${distDir}/windows/AegisVault-J")
+        outputDir.mkdirs()
+
+        copy {
+            from shadowJar.archiveFile
+            into outputDir
+            rename { 'aegis-vault.jar' }
+        }
+
+        def launcher = file("${outputDir}/AegisVault-J.bat")
+        launcher.text = '@echo off\r\n' +
+                'set SCRIPT_DIR=%~dp0\r\n' +
+                'start "" javaw -jar "%SCRIPT_DIR%aegis-vault.jar" %*\r\n'
+
+        def readme = file("${outputDir}/README.txt")
+        readme.text = "${appName} v${releaseVersion}\r\n" +
+                "${appDescription}\r\n" +
+                "${appCopyright}\r\n\r\n" +
+                "Requirements: Java 21 or later\r\n" +
+                "Run: Double-click AegisVault-J.bat\r\n"
+
+        println "Windows portable package created at: ${outputDir}"
+    }
+}
+
+tasks.register('packageLinuxPortable') {
+    dependsOn shadowJar
+    group = 'distribution'
+    description = 'Creates a portable Linux application bundle'
+
+    doLast {
+        def outputDir = file("${distDir}/linux/aegisvault-j")
+        outputDir.mkdirs()
+
+        copy {
+            from shadowJar.archiveFile
+            into outputDir
+            rename { 'aegis-vault.jar' }
+        }
+
+        def launcher = file("${outputDir}/aegisvault-j.sh")
+        launcher.text = '#!/bin/bash\n' +
+                'SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"\n' +
+                'java -jar "$SCRIPT_DIR/aegis-vault.jar" "$@"\n'
+        launcher.setExecutable(true)
+
+        def readme = file("${outputDir}/README.txt")
+        readme.text = "${appName} v${releaseVersion}\n" +
+                "${appDescription}\n" +
+                "${appCopyright}\n\n" +
+                "Requirements: Java 21 or later, JavaFX runtime\n" +
+                "Run: ./aegisvault-j.sh\n"
+
+        println "Linux portable package created at: ${outputDir}"
+    }
+}
+
+tasks.register('packageMacOsPortable') {
+    dependsOn shadowJar
+    group = 'distribution'
+    description = 'Creates a portable macOS application bundle'
+
+    doLast {
+        def appDir = file("${distDir}/macos/AegisVault-J.app")
+        def contentsDir = file("${appDir}/Contents")
+        def macosDir = file("${contentsDir}/MacOS")
+        def javaDir = file("${contentsDir}/Java")
+        macosDir.mkdirs()
+        javaDir.mkdirs()
+
+        copy {
+            from shadowJar.archiveFile
+            into javaDir
+            rename { 'aegis-vault.jar' }
+        }
+
+        def launcher = file("${macosDir}/AegisVault-J")
+        launcher.text = '#!/bin/bash\n' +
+                'SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"\n' +
+                'java -jar "$SCRIPT_DIR/../Java/aegis-vault.jar" "$@"\n'
+        launcher.setExecutable(true)
+
+        def plist = file("${contentsDir}/Info.plist")
+        plist.text = '<?xml version="1.0" encoding="UTF-8"?>\n' +
+                '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n' +
+                '<plist version="1.0">\n' +
+                '<dict>\n' +
+                '  <key>CFBundleExecutable</key><string>AegisVault-J</string>\n' +
+                '  <key>CFBundleIdentifier</key><string>com.aegisvault</string>\n' +
+                '  <key>CFBundleName</key><string>' + appName + '</string>\n' +
+                '  <key>CFBundleShortVersionString</key><string>' + releaseVersion + '</string>\n' +
+                '  <key>CFBundleVersion</key><string>' + releaseVersion + '</string>\n' +
+                '  <key>CFBundlePackageType</key><string>APPL</string>\n' +
+                '  <key>NSHighResolutionCapable</key><true/>\n' +
+                '</dict>\n' +
+                '</plist>\n'
+
+        println "macOS portable package created at: ${appDir}"
+    }
+}
